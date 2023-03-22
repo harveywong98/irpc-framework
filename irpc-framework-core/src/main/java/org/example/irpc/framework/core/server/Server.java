@@ -7,6 +7,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.example.irpc.framework.core.common.RpcDecoder;
+import org.example.irpc.framework.core.common.RpcEncoder;
 import org.example.irpc.framework.core.common.config.ServerConfig;
 
 
@@ -48,9 +50,9 @@ public class Server {
             protected void initChannel(SocketChannel socketChannel) throws Exception {
                 System.out.println("初始化provider过程");
                 // TODO 后续放开
-//                socketChannel.pipeline().addLast(new RpcEncoder());
-//                socketChannel.pipeline().addLast(new RpcDecoder());
-//                socketChannel.pipeline().addLast(new ServerHandler());
+                socketChannel.pipeline().addLast(new RpcEncoder());
+                socketChannel.pipeline().addLast(new RpcDecoder());
+                socketChannel.pipeline().addLast(new ServerHandler());
             }
         });
         // TODO sync() 方法的作用是？
@@ -79,8 +81,7 @@ public class Server {
         ServerConfig serverConfig = new ServerConfig();
         serverConfig.setPort(9090);
         server.setServerConfig(serverConfig);
-        // TODO
-        server.registryService(new Object());
+        server.registryService(new DataServiceImpl());
         server.startApplication();
     }
 }
