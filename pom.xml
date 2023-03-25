@@ -13,12 +13,16 @@
     </modules>
 
     <properties>
-        <netty.version>4.1.6.Final</netty.version>
-        <fastjson.version>1.2.29</fastjson.version>
-        <jboss-marshalling-river.version>1.4.11.Final</jboss-marshalling-river.version>
-        <jboss-marshalling-serial.version>1.4.11.Final</jboss-marshalling-serial.version>
-        <slf4j-api.version>1.7.13</slf4j-api.version>
-        <javassist.version>3.21.0-GA</javassist.version>
+        <netty.version>4.1.90.Final</netty.version>
+        <fastjson.version>2.0.25</fastjson.version>
+        <jboss-marshalling-river.version>2.1.1.Final</jboss-marshalling-river.version>
+        <jboss-marshalling-serial.version>2.1.1.Final</jboss-marshalling-serial.version>
+        <slf4j-api.version>2.0.5</slf4j-api.version>
+        <javassist.version>3.29.2-GA</javassist.version>
+
+        <zookeeper.version>3.8.1</zookeeper.version>
+        <zkClient.version>0.11</zkClient.version>
+        <curator.version>2.12.0</curator.version>
 
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -62,6 +66,23 @@
             <groupId>org.jboss.marshalling</groupId>
             <artifactId>jboss-marshalling-serial</artifactId>
             <version>${jboss-marshalling-serial.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeper.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.101tec</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>${zkClient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>${curator.version}</version>
         </dependency>
     </dependencies>
 

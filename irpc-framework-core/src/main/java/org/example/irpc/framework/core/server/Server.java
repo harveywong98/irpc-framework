@@ -9,10 +9,18 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.example.irpc.framework.core.common.RpcDecoder;
 import org.example.irpc.framework.core.common.RpcEncoder;
+import org.example.irpc.framework.core.common.config.PropertiesBootstrap;
 import org.example.irpc.framework.core.common.config.ServerConfig;
+import org.example.irpc.framework.core.common.utils.CommonUtils;
+import org.example.irpc.framework.core.registy.RegistryService;
+import org.example.irpc.framework.core.registy.URL;
+import org.example.irpc.framework.core.registy.zookeeper.ZookeeperRegister;
 
+
+import java.util.concurrent.TimeUnit;
 
 import static org.example.irpc.framework.core.common.cache.CommonServerCache.PROVIDER_CLASS_MAP;
+import static org.example.irpc.framework.core.common.cache.CommonServerCache.PROVIDER_URL_SET;
 
 public class Server {
 
@@ -20,6 +28,7 @@ public class Server {
     private static EventLoopGroup workerGroup = null;
 
     private ServerConfig serverConfig;
+    private RegistryService registryService;
 
     public ServerConfig getServerConfig() {
         return serverConfig;
@@ -56,19 +65,22 @@ public class Server {
             }
         });
         // TODO sync() 方法的作用是？
-        bootstrap.bind(serverConfig.getPort()).sync();
+        bootstrap.bind(serverConfig.getServerPort()).sync();
     }
 
+
     /**
-     * TODO 这个方法是在干嘛？
+     * todo 这个方法是在干嘛？答：模拟注册，手动暴露 server 端的接口
+     *
      * @param serviceBean
      */
+    @Deprecated
     public void registryService(Object serviceBean) {
-        if(serviceBean.getClass().getInterfaces().length==0){
+        if (serviceBean.getClass().getInterfaces().length == 0) {
             throw new RuntimeException("service must had interfaces!");
         }
         Class[] classes = serviceBean.getClass().getInterfaces();
-        if(classes.length>1){
+        if (classes.length > 1) {
             throw new RuntimeException("service must only had one interfaces!");
         }
         Class interfaceClass = classes[0];
@@ -76,12 +88,53 @@ public class Server {
         PROVIDER_CLASS_MAP.put(interfaceClass.getName(), serviceBean);
     }
 
+    public void exportService(Object serviceBean) {
+        if (serviceBean.getClass().getInterfaces().length == 0) {
+            throw new RuntimeException("service must had interfaces!");
+        }
+        Class[] classes = serviceBean.getClass().getInterfaces();
+        if (classes.length > 1) {
+            throw new RuntimeException("service must only had one interfaces!");
+        }
+        if (registryService == null) {
+            registryService = new ZookeeperRegister(serverConfig.getRegisterAddr());
+        }
+        Class interfaceClass = classes[0];
+        PROVIDER_CLASS_MAP.put(interfaceClass.getName(), serviceBean);
+        URL url = new URL();
+        url.setServiceName(interfaceClass.getName());
+        url.setApplicationName(serverConfig.getApplicationName());
+        url.addParameter("host", CommonUtils.getIpAddress());
+        url.addParameter("port", String.valueOf(serverConfig.getServerPort()));
+        PROVIDER_URL_SET.add(url);
+    }
+
+    public void batchExportUrl() {
+        Thread task = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                for (URL url : PROVIDER_URL_SET) {
+                    registryService.register(url);
+                }
+            }
+        });
+        task.start();
+    }
+
+    public void initServerConfig() {
+        ServerConfig serverConfig = PropertiesBootstrap.loadServerConfigFromLocal();
+        this.setServerConfig(serverConfig);
+    }
+
     public static void main(String[] args) throws InterruptedException {
         Server server = new Server();
-        ServerConfig serverConfig = new ServerConfig();
-        serverConfig.setPort(9090);
-        server.setServerConfig(serverConfig);
-        server.registryService(new DataServiceImpl());
+        server.initServerConfig();
+        server.exportService(new DataServiceImpl());
         server.startApplication();
     }
 }

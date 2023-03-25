@@ -1,13 +1,31 @@
 package org.example.irpc.framework.core.common.config;
 
 public class ServerConfig {
-    private int port;
+    private String applicationName;
+    private String registerAddr;
+    private int serverPort;
 
-    public int getPort() {
-        return port;
+    public int getServerPort() {
+        return serverPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public String getRegisterAddr() {
+        return registerAddr;
+    }
+
+    public void setRegisterAddr(String registerAddr) {
+        this.registerAddr = registerAddr;
     }
 }
