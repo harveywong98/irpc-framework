@@ -28,10 +28,10 @@ public class JDKClientInvocationHandler implements InvocationHandler {
         RESP_MAP.put(rpcInvocation.getUuid(), OBJECT);
         SEND_QUEUE.add(rpcInvocation);
         long beginTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - beginTime < 3 *1000) {
+        while (System.currentTimeMillis() - beginTime < 10 * 1000) {
             Object object = RESP_MAP.get(rpcInvocation.getUuid());
             if (object instanceof RpcInvocation) {
-                return (RpcInvocation) ((RpcInvocation) object).getResponse();
+                return ((RpcInvocation) object).getResponse();
             }
         }
         throw new TimeoutException("client wait server's response timeout!");

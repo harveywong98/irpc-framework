@@ -49,9 +49,9 @@ public class Server {
             @Override
             protected void initChannel(SocketChannel socketChannel) throws Exception {
                 System.out.println("初始化provider过程");
-                // TODO 后续放开
                 socketChannel.pipeline().addLast(new RpcEncoder());
                 socketChannel.pipeline().addLast(new RpcDecoder());
+                // 核心代码，可以类比于 MVC 中的 Controller，需要实现 ChannelInboundHandlerAdapter
                 socketChannel.pipeline().addLast(new ServerHandler());
             }
         });

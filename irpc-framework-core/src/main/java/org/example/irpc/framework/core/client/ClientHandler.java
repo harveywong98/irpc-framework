@@ -20,7 +20,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         if (!RESP_MAP.containsKey(rpcInvocation.getUuid())) {
             throw new IllegalArgumentException("server response is error!");
         }
-        // TODO 为什么判空之后还要再放一遍？是哪里阻塞住了吗？
+        // todo 为什么判空之后还要再放一遍？是哪里阻塞住了吗？
+        // 答：在结果返回之前，客户端一定已经保存了一份 rpcInvocation 了，如果服务端此时没有，那么就可以认为服务端返回的 id 是异常的，因此报错
         RESP_MAP.put(rpcInvocation.getUuid(), rpcInvocation);
         // TODO 这步是在？
         ReferenceCountUtil.release(msg);

@@ -13,6 +13,7 @@ import org.example.irpc.framework.core.common.RpcEncoder;
 import org.example.irpc.framework.core.common.RpcInvocation;
 import org.example.irpc.framework.core.common.RpcProtocol;
 import org.example.irpc.framework.core.common.config.ClientConfig;
+import org.example.irpc.framework.core.proxy.javassist.JavassistProxyFactory;
 import org.example.irpc.framework.core.proxy.jdk.JDKProxyFactory;
 import org.example.irpc.framework.interfaces.DataService;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ public class Client {
         this.startClient(channelFuture);
         // TODO 这里是解决了什么问题？
         RpcReference rpcReference = new RpcReference(new JDKProxyFactory());
+//        RpcReference rpcReference = new RpcReference(new JavassistProxyFactory());
         return rpcReference;
     }
 
